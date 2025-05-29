@@ -1,4 +1,4 @@
-beta_predict <- function(p, calib){
+beta_predict <- function(p, calib, type = c("prob", "class")){
   p <- pmax(1e-16, pmin(p, 1-1e-16))
   d <- data.frame(p)
   if (calib$parameters == "abm"){
@@ -10,5 +10,10 @@ beta_predict <- function(p, calib){
     d$lp <- log(2 * p)
     d$l1p <- log(2*(1-p))
   }
-  return(predict(calib$model, newdata=d, type="response"))
+ pred <- predict(calib$model, newdata = d, type = "response")
+  if (type == "class") {
+    return(as.integer(pred >= 0.5))
+  } else {
+    return(pred)
+  }
 }
